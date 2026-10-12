@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FROM python:3.9-slim
 
 WORKDIR /app
@@ -14,3 +15,30 @@ ENV FLASK_RUN_PORT=5000
 EXPOSE 5000
 
 CMD ["flask", "run"]
+=======
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]
+>>>>>>> 76ec995 (Second prog)
